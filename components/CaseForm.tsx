@@ -144,14 +144,6 @@ export function CaseForm({ initialValues, onSave, onDelete, saveLabel = 'Save Ca
         {/* Clinical Details */}
         <SectionHeader title="Clinical Details" />
 
-        <Field label="Diagnosis">
-          <StyledInput value={form.diagnosis} onChangeText={v => update('diagnosis', v)} placeholder="Diagnosis / ICD code" />
-        </Field>
-
-        <Field label="Procedure">
-          <StyledInput value={form.procedure_name} onChangeText={v => update('procedure_name', v)} placeholder="Procedure name / CPT" />
-        </Field>
-
         <Field label="Anesthetic Type">
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipScroll}>
             <View style={styles.chipRow}>
@@ -306,12 +298,8 @@ export function CaseForm({ initialValues, onSave, onDelete, saveLabel = 'Save Ca
           </>
         )}
 
-        {/* Insurance & Notes */}
-        <SectionHeader title="Insurance & Notes" />
-
-        <Field label="Insurance Company">
-          <StyledInput value={form.insurance_company} onChangeText={v => update('insurance_company', v)} placeholder="Insurance carrier" />
-        </Field>
+        {/* Notes */}
+        <SectionHeader title="Notes" />
 
         <Field label="Notes">
           <TextInput

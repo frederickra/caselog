@@ -35,14 +35,10 @@ export function CaseListItem({ item, onPress }: Props) {
       </View>
 
       <Text style={styles.surgeon}>{item.surgeon || '—'}</Text>
-      {!!item.procedure_name && (
-        <Text style={styles.procedure} numberOfLines={1}>{item.procedure_name}</Text>
-      )}
 
       <View style={styles.footer}>
         <Text style={styles.meta}>#{item.ticket_number || '—'}</Text>
         {!!timeRange && <Text style={styles.meta}>{timeRange}</Text>}
-        {!!item.insurance_company && <Text style={styles.meta}>{item.insurance_company}</Text>}
       </View>
     </TouchableOpacity>
   );

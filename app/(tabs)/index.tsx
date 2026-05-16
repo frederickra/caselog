@@ -65,7 +65,7 @@ export default function DashboardScreen() {
 
           <GroupLabel label="Units" />
           <View style={styles.row}>
-            <StatCard label="Total Units" value={fmt(stats.totalUnits)} accent />
+            <StatCard label="Total Units" value={fmt(stats.totalUnits)} />
             <StatCard label="Total Work Units" value={fmt(stats.workUnits)} accent />
           </View>
           <View style={styles.row}>

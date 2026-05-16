@@ -15,8 +15,6 @@ export async function exportCasesToExcel(cases: CaseRecord[]): Promise<void> {
     'Date': fmtDate(c.date),
     'Ticket #': c.ticket_number,
     'Surgeon': c.surgeon,
-    'Diagnosis': c.diagnosis,
-    'Procedure': c.procedure_name,
     'Add-on': yn(c.is_add_on),
     'Location': c.location,
     'Anesthetic Type': c.anesthetic_type,
@@ -36,19 +34,17 @@ export async function exportCasesToExcel(cases: CaseRecord[]): Promise<void> {
     'Split Provider': c.split_provider,
     'Split Units': c.split_units,
     'Net Work Units': c.net_work_units,
-    'Insurance Company': c.insurance_company,
     'Notes': c.notes,
   }));
 
   const ws = XLSX.utils.json_to_sheet(rows);
 
   ws['!cols'] = [
-    { wch: 12 }, { wch: 10 }, { wch: 22 }, { wch: 26 }, { wch: 30 },
-    { wch: 8 },  { wch: 8 },  { wch: 16 }, { wch: 11 }, { wch: 16 },
-    { wch: 10 }, { wch: 10 }, { wch: 16 }, { wch: 11 }, { wch: 11 },
-    { wch: 10 }, { wch: 15 }, { wch: 12 }, { wch: 20 }, { wch: 12 },
-    { wch: 11 }, { wch: 22 }, { wch: 12 }, { wch: 15 }, { wch: 22 },
-    { wch: 32 },
+    { wch: 12 }, { wch: 10 }, { wch: 22 }, { wch: 8 },  { wch: 8 },
+    { wch: 16 }, { wch: 11 }, { wch: 16 }, { wch: 10 }, { wch: 10 },
+    { wch: 16 }, { wch: 11 }, { wch: 11 }, { wch: 10 }, { wch: 15 },
+    { wch: 12 }, { wch: 20 }, { wch: 12 }, { wch: 11 }, { wch: 22 },
+    { wch: 12 }, { wch: 15 }, { wch: 32 },
   ];
 
   const wb = XLSX.utils.book_new();

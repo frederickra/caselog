@@ -89,7 +89,7 @@ export default function LogScreen() {
           <Ionicons name="search" size={17} color="#94a3b8" style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Surgeon, ticket, ASA code, procedure…"
+            placeholder="Surgeon, ticket, ASA code…"
             placeholderTextColor="#94a3b8"
             value={search}
             onChangeText={setSearch}

@@ -11,8 +11,6 @@ function defaultValues(): CaseFormValues {
     date: now,
     ticket_number: '',
     surgeon: '',
-    diagnosis: '',
-    procedure_name: '',
     is_add_on: false,
     location: '',
     anesthetic_type: '',
@@ -28,7 +26,6 @@ function defaultValues(): CaseFormValues {
     is_split: false,
     split_provider: '',
     split_units: '',
-    insurance_company: '',
     notes: '',
   };
 }

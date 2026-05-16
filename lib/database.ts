@@ -37,11 +37,12 @@ function getDb(): SQLite.SQLiteDatabase {
         net_work_units REAL DEFAULT 0,
         insurance_company TEXT DEFAULT '',
         notes TEXT DEFAULT '',
+        remote_id TEXT DEFAULT NULL,
+        synced INTEGER DEFAULT 0,
         created_at TEXT DEFAULT (datetime('now'))
       );
       CREATE INDEX IF NOT EXISTS idx_cases_date ON cases(date);
     `);
-    // Migrate tables created before these columns existed
     const migrations = [
       `ALTER TABLE cases ADD COLUMN asa_billing_code TEXT DEFAULT ''`,
       `ALTER TABLE cases ADD COLUMN work_units REAL DEFAULT 0`,
@@ -49,11 +50,12 @@ function getDb(): SQLite.SQLiteDatabase {
       `ALTER TABLE cases ADD COLUMN split_provider TEXT DEFAULT ''`,
       `ALTER TABLE cases ADD COLUMN split_units REAL DEFAULT 0`,
       `ALTER TABLE cases ADD COLUMN net_work_units REAL DEFAULT 0`,
+      `ALTER TABLE cases ADD COLUMN remote_id TEXT DEFAULT NULL`,
+      `ALTER TABLE cases ADD COLUMN synced INTEGER DEFAULT 0`,
     ];
     for (const sql of migrations) {
       try { db.execSync(sql); } catch {}
     }
-    // Backfill net_work_units for existing non-split rows that were saved before this column existed
     db.execSync(`UPDATE cases SET net_work_units = work_units WHERE is_split = 0 AND net_work_units = 0 AND work_units > 0`);
   }
   return db;
@@ -85,8 +87,6 @@ function formToParams(v: CaseFormValues) {
     format(v.date, 'yyyy-MM-dd'),
     v.ticket_number,
     v.surgeon,
-    v.diagnosis,
-    v.procedure_name,
     v.is_add_on ? 1 : 0,
     v.location,
     v.anesthetic_type,
@@ -106,7 +106,6 @@ function formToParams(v: CaseFormValues) {
     v.split_provider,
     splitU,
     netWorkUnits,
-    v.insurance_company,
     v.notes,
   ] as const;
 }
@@ -116,13 +115,13 @@ export function insertCase(values: CaseFormValues): number {
   const params = formToParams(values);
   const result = d.runSync(
     `INSERT INTO cases (
-      date, ticket_number, surgeon, diagnosis, procedure_name,
+      date, ticket_number, surgeon,
       is_add_on, location, anesthetic_type, start_time, end_time,
       asa_code, asa_billing_code, base_value, total_time, time_units,
       modifiers, procedure_units, total_units, adjusted_units, work_units,
       is_split, split_provider, split_units, net_work_units,
-      insurance_company, notes
-    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+      notes
+    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     ...params,
   );
   return result.lastInsertRowId;
@@ -133,12 +132,12 @@ export function updateCase(id: number, values: CaseFormValues): void {
   const params = formToParams(values);
   d.runSync(
     `UPDATE cases SET
-      date=?, ticket_number=?, surgeon=?, diagnosis=?, procedure_name=?,
+      date=?, ticket_number=?, surgeon=?,
       is_add_on=?, location=?, anesthetic_type=?, start_time=?, end_time=?,
       asa_code=?, asa_billing_code=?, base_value=?, total_time=?, time_units=?,
       modifiers=?, procedure_units=?, total_units=?, adjusted_units=?, work_units=?,
       is_split=?, split_provider=?, split_units=?, net_work_units=?,
-      insurance_company=?, notes=?
+      notes=?
     WHERE id=?`,
     ...params,
     id,
@@ -164,9 +163,9 @@ export function getCases(opts: {
   const params: (string | number)[] = [];
 
   if (opts.search) {
-    conditions.push('(ticket_number LIKE ? OR surgeon LIKE ? OR procedure_name LIKE ? OR insurance_company LIKE ? OR diagnosis LIKE ? OR asa_billing_code LIKE ?)');
+    conditions.push('(ticket_number LIKE ? OR surgeon LIKE ? OR asa_billing_code LIKE ?)');
     const q = `%${opts.search}%`;
-    params.push(q, q, q, q, q, q);
+    params.push(q, q, q);
   }
   if (opts.dateFrom) { conditions.push('date >= ?'); params.push(opts.dateFrom); }
   if (opts.dateTo) { conditions.push('date <= ?'); params.push(opts.dateTo); }
@@ -233,8 +232,6 @@ export function recordToFormValues(r: CaseRecord): CaseFormValues {
     date: baseDate,
     ticket_number: r.ticket_number ?? '',
     surgeon: r.surgeon ?? '',
-    diagnosis: r.diagnosis ?? '',
-    procedure_name: r.procedure_name ?? '',
     is_add_on: r.is_add_on === 1,
     location: r.location ?? '',
     anesthetic_type: r.anesthetic_type ?? '',
@@ -250,7 +247,6 @@ export function recordToFormValues(r: CaseRecord): CaseFormValues {
     is_split: r.is_split === 1,
     split_provider: r.split_provider ?? '',
     split_units: r.split_units ? String(r.split_units) : '',
-    insurance_company: r.insurance_company ?? '',
     notes: r.notes ?? '',
   };
 }

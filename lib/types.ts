@@ -3,8 +3,6 @@ export interface CaseRecord {
   date: string;
   ticket_number: string;
   surgeon: string;
-  diagnosis: string;
-  procedure_name: string;
   is_add_on: number;
   location: string;
   anesthetic_type: string;
@@ -24,7 +22,6 @@ export interface CaseRecord {
   split_provider: string;
   split_units: number;
   net_work_units: number;
-  insurance_company: string;
   notes: string;
   created_at: string;
 }
@@ -33,8 +30,6 @@ export interface CaseFormValues {
   date: Date;
   ticket_number: string;
   surgeon: string;
-  diagnosis: string;
-  procedure_name: string;
   is_add_on: boolean;
   location: string;
   anesthetic_type: string;
@@ -50,7 +45,6 @@ export interface CaseFormValues {
   is_split: boolean;
   split_provider: string;
   split_units: string;
-  insurance_company: string;
   notes: string;
 }
 
